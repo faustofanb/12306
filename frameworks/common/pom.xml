@@ -9,7 +9,6 @@
 	</parent>
 
 	<artifactId>index12306-common-spring-boot-starter</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.opengoofy.index12306</groupId>

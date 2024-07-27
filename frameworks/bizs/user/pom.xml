@@ -8,7 +8,6 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>index12306-user-spring-boot-starter</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>org.opengoofy.index12306</groupId>

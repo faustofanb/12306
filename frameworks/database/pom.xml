@@ -9,7 +9,6 @@
 	</parent>
 
 	<artifactId>index12306-database-spring-boot-starter</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.baomidou</groupId>

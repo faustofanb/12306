@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>index12306-distributedid-spring-boot-starter</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
