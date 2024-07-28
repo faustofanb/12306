@@ -35,12 +35,10 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <lombok.version>1.18.30</lombok.version>
-        <docker.host>127.0.0.1:2375</docker.host>
-        <docker.maven.plugin.version>0.40.0</docker.maven.plugin.version>
         <!--项目根路径,
         解决spotless@build image error: Could not find resource
         '${maven.multiModuleProjectDirectory}/format/copyright.txt'.-->
-        <base.dir>/home/fausto/Desktop/Project/12306</base.dir>
+        <base.dir>${root}</base.dir>
     </properties>
 
     <modules>
@@ -81,13 +79,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${maven-common-plugin.version}</version>
-                <executions>
+                <!-- <executions>
                     <execution>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
                     </execution>
-                </executions>
+                </executions> -->
                 <configuration>
                     <excludes>
                         <exclude>
@@ -114,32 +112,6 @@
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless-maven-plugin.version}</version>
-                <configuration>
-                    <java>
-                        <!--<eclipse>
-                            <file>${maven.multiModuleProjectDirectory}/format/12306_spotless_formatter.xml</file>
-                        </eclipse>-->
-                        <licenseHeader>
-                            <!-- ${maven.multiModuleProjectDirectory} 爆红属于正常，并不影响编译或者运行，忽略就好 -->
-                            <!--<file>${maven.multiModuleProjectDirectory}/format/copyright.txt</file>-->
-                            <file>${base.dir}/format/copyright.txt</file>
-                        </licenseHeader>
-                    </java>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>apply</goal>
-                        </goals>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -183,10 +155,35 @@
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless-maven-plugin.version}</version>
+                    <configuration>
+                        <java>
+                            <licenseHeader>
+                                <!-- 使用 base.dir 指向项目根目录 -->
+                                <file>${base.dir}/format/copyright.txt</file>
+                            </licenseHeader>
+                        </java>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>apply</goal>
+                            </goals>
+                            <phase>compile</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <!--使用aliyun的Maven镜像源提升下载速度-->
-    <repositories>
+    <!-- <repositories>
         <repository>
             <id>aliyunmaven</id>
             <name>aliyun</name>
@@ -197,5 +194,5 @@
             <name>central2</name>
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
-    </repositories>
+    </repositories> -->
 </project>

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#先初始化环境
+bash ./init.sh
+
 # 脚本开始时间
 START_TIME=$(date +%s)
 
