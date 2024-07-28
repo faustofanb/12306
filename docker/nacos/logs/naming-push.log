@@ -1,0 +1,4 @@
+2024-07-28 21:39:15,322 INFO [PUSH-SUCC] 15ms, all delay time 522ms for subscriber 172.19.0.8, Service{namespace='public', group='DEFAULT_GROUP', name='index12306-ticket-service', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2024-07-28 21:40:02,345 INFO [PUSH-SUCC] 5ms, all delay time 516ms for subscriber 172.19.0.8, Service{namespace='public', group='DEFAULT_GROUP', name='index12306-user-service', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+

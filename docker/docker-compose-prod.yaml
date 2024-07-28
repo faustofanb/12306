@@ -16,8 +16,18 @@ services:
       - ./mysql/init-scripts/:/docker-entrypoint-initdb.d/
     networks:
       - app_network
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --explicit_defaults_for_timestamp=true --lower_case_table_names=1
-  #####################################################
+    command: 
+      - "--default-authentication-plugin=mysql_native_password"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_general_ci"
+      - "--explicit_defaults_for_timestamp=true"
+      - "--lower_case_table_names=1"  
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5      
+  #####################################################      
   #                   Redis                           #
   #####################################################
   redis:
@@ -30,23 +40,6 @@ services:
       - redis_data:/data
     networks:
       - app_network
-  #####################################################
-  #                   RabbitMQ                        #
-  #####################################################
-  #  rabbitmq:
-  #    image: rabbitmq:3.12-management
-  #    container_name: rabbitmq
-  #    ports:
-  #      - "5672:5672"
-  #      - "15672:15672"
-  #    environment:
-  #      TZ: Asia/Shanghai
-  #      RABBITMQ_DEFAULT_USER: admin
-  #      RABBITMQ_DEFAULT_PASS: admin
-  #    volumes:
-  #      - rabbitmq_data:/var/lib/rabbitmq/mnesia
-  #    networks:
-  #      - app_network
   #####################################################
   #                   RocketMQ                        #
   #####################################################
@@ -91,103 +84,102 @@ services:
   #                   Nacos                           #
   #####################################################
   nacos:
-    image: nacos/nacos-server:v2.1.2
+    image: nacos/nacos-server:v2.2.1
     container_name: nacos
+    restart: on-failure
     networks:
       - app_network
-    environment:
-      - MODE=standalone
+    env_file:
+      - ./nacos/env/nacos-standlone-mysql.env
+    volumes:
+      - ./nacos/logs/:/home/nacos/logs
+      - ./nacos/conf/application.properties:/home/nacos/conf/application.properties
     ports:
       - "8848:8848"
       - "9848:9848"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/health/liveness"]
+      interval: 10s
+      timeout: 5s
+      retries: 5      
+    depends_on:
+      mysql:
+        condition: service_healthy  
   #####################################################
   #                   App                           #
   #####################################################
   gateway-service:
     build: ../services/gateway-service
     container_name: gateway-service
+    restart: on-failure    
     ports:
       - "9000:9000"
     networks:
       - app_network
-    environment:
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
     depends_on:
-      - nacos
-      - mysql
-      - redis
-      - proxy
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
   user-service:
     build: ../services/user-service
     container_name: user-service
+    restart: on-failure    
     ports:
       - "9001:9001"
     networks:
       - app_network
-    environment:
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
     depends_on:
-      - nacos
-      - mysql
-      - redis
-      - proxy
-      - gateway-service
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
   ticket-service:
     build: ../services/ticket-service
     container_name: ticket-service
+    restart: on-failure    
     ports:
       - "9002:9002"
     networks:
       - app_network
-    environment:
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
     depends_on:
-      - nacos
-      - mysql
-      - redis
-      - proxy
-      - gateway-service
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
   order-service:
     build: ../services/order-service
     container_name: order-service
+    restart: on-failure    
     ports:
       - "9003:9003"
     networks:
       - app_network
-    environment:
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
     depends_on:
-      - nacos
-      - mysql
-      - redis
-      - proxy
-      - gateway-service
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
   pay-service:
     build: ../services/pay-service
     container_name: pay-service
+    restart: on-failure    
     ports:
       - "9004:9004"
     networks:
       - app_network
-    environment:
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
     depends_on:
-      - nacos
-      - mysql
-      - redis
-      - proxy
-      - gateway-service
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
   #####################################################
   #                   Nginx                           #
   #####################################################
   nginx:
     image: nginx:1.25.4
     container_name: nginx
+    privileged: true
     ports:
       - "80:80"
       - "5174:5174"
@@ -203,7 +195,6 @@ services:
 #####################################################
 networks:
   app_network:
-    driver: bridge
 volumes:
   mysql_data:
   redis_data:

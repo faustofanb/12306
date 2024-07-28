@@ -35,10 +35,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <lombok.version>1.18.30</lombok.version>
-        <!--项目根路径,
-        解决spotless@build image error: Could not find resource
-        '${maven.multiModuleProjectDirectory}/format/copyright.txt'.-->
-        <base.dir>${root}</base.dir>
+
     </properties>
 
     <modules>
@@ -165,7 +162,7 @@
                         <java>
                             <licenseHeader>
                                 <!-- 使用 base.dir 指向项目根目录 -->
-                                <file>${base.dir}/format/copyright.txt</file>
+                                <file>${maven.multiModuleProjectDirectory}/format/copyright.txt</file>
                             </licenseHeader>
                         </java>
                     </configuration>
