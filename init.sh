@@ -2,7 +2,7 @@
 
 # 检查当前的默认JDK版本
 JAVA_VERSION=$(java -version 2>&1 | awk -F[\"_] '/version/ {print $2}')
-EXPECTED_VERSION="17"
+EXPECTED_VERSION="17.0.12"
 
 # 函数：下载并安装JDK 17
 install_jdk17() {
